@@ -1,6 +1,8 @@
 const express = require("express");
 const port = 8000;
 const app = express();
+const passport = require("passport");
+const db = require("./config/database");
 
 app.get("/", (req, res) => {
   console.log("hellow world");
