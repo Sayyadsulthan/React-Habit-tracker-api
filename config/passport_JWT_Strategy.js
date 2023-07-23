@@ -1,27 +1,32 @@
 const passport = require("passport");
-const JWT_Strategy = require("passport-jwt").Strategy;
-const Extract_JWt = require("passport-jwt").ExtractJwt;
+const JWTStrategy = require("passport-jwt").Strategy;
+const ExtractJWT = require("passport-jwt").ExtractJwt;
 
 const User = require("../model/user");
+const key = "codeial";
 
-var opt = {
-  jwtFromRequest: Extract_JWt.fromAuthHeaderAsBearerToken(),
-  secretKey: "PassportJwt",
+const opts = {
+  jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken(),
+  secretOrKey: key,
 };
 
 passport.use(
-  new JWT_Strategy(opt, function (jwt_payload, done) {
-    User.findById(jwt_payload.id)
+  new JWTStrategy(opts, function (jwt_payload, done) {
+    console.log("payload : ", jwt_payload);
+    User.findById(jwt_payload._id)
+      //using primises to get user
       .then((user) => {
         if (user) {
-          console.log("user found from db using jwt : ", user);
           return done(null, user);
         }
-        console.log("User not found from db using jwt");
+
         return done(null, false);
       })
 
-      .catch((err) => done(err, false));
+      .catch((err) => {
+        console.log("**** err infinding user from jwt: ", err);
+        return done(err, false);
+      });
   })
 );
 

@@ -2,12 +2,13 @@ const express = require("express");
 const port = 8000;
 const app = express();
 const passport = require("passport");
+const passport_JWT = require("./config/passport_JWT_Strategy");
 const db = require("./config/database");
 
-app.get("/", (req, res) => {
-  console.log("hellow world");
-  return res.status(200).json({ message: "hellow world" });
-});
+app.use(passport.initialize());
+app.use(express.urlencoded({ extended: true }));
+
+app.use("/", require("./routes"));
 
 app.listen(port, (err) => {
   if (err) {

@@ -9,6 +9,7 @@ module.exports.createUser = function (req, res) {
   if (!email || !password || !name || !confirm_password) {
     return res.status(400).json({
       message: "Please Fill the required fileds to create an Account",
+      required_data: "name, email, password, confirm_password",
     });
   }
 
@@ -31,13 +32,14 @@ module.exports.createUser = function (req, res) {
 
 module.exports.Login = async function (req, res) {
   try {
-    const user = User.findOne({ email: req.body.email });
+    const user = await User.findOne({
+      email: req.body.email,
+      password: req.body.password,
+    });
     if (user) {
-      const Token = jwt.sign(user.toJSON(), "PassportJwt", {
-        expiresIn: 10000,
-      });
+      const key = "codeial";
 
-      console.log("token created successfullly ", Token);
+      const Token = await jwt.sign(user.toJSON(), key);
 
       return res.status(200).json({
         message:
@@ -50,8 +52,15 @@ module.exports.Login = async function (req, res) {
       message: "User not found",
     });
   } catch (err) {
-    return res.status(500).json({
+    console.log("error ", err);
+    return res.status(404).json({
       message: "Internal Server Error",
     });
   }
+};
+
+module.exports.Dashboard = async function (req, res) {
+  // const user = jwt.decode(req.body)
+  console.log("Token ", req.body);
+  return res.status(200).json({ message: "ToDO" });
 };
