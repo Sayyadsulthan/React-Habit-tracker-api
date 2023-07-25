@@ -13,4 +13,6 @@ app.get(
   UserController.Dashboard
 );
 
+app.use('/habit',  require('./habit'))
+
 module.exports = app;

@@ -12,7 +12,7 @@ const opts = {
 
 passport.use(
   new JWTStrategy(opts, function (jwt_payload, done) {
-    console.log("payload : ", jwt_payload);
+    // console.log("payload : ", jwt_payload);
     User.findById(jwt_payload._id)
       //using primises to get user
       .then((user) => {

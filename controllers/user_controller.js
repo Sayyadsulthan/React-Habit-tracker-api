@@ -1,5 +1,14 @@
-const User = require("../model/user");
 const jwt = require("jsonwebtoken");
+
+const User = require("../model/user");
+const Habit = require("../model/habits");
+
+let date = new Date();
+let DD = date.getDate();
+let MM = date.getMonth() + 1;
+let YY = date.getFullYear();
+var firstDay = new Date(date.getFullYear(), date.getMonth(), 1);
+var lastDay = new Date(date.getFullYear(), date.getMonth(), 0);
 
 module.exports.createUser = function (req, res) {
   const name = req.body.name;
@@ -60,7 +69,22 @@ module.exports.Login = async function (req, res) {
 };
 
 module.exports.Dashboard = async function (req, res) {
-  // const user = jwt.decode(req.body)
-  console.log("Token ", req.body);
-  return res.status(200).json({ message: "ToDO" });
+  try {
+    // const user = jwt.decode(req.body)
+    // console.log("Token ", req.body);
+
+    // const habits = await Habit.find();
+    // deleting previus month older month habits
+    // await Habit.deleteMany({ month: !(MM + 1) });
+    const currentHabits = await Habit.find();
+
+    return res
+      .status(200)
+      .json({ message: "This month habit", habits: currentHabits });
+  } catch (err) {
+    console.log(err);
+    return res.status(404).json({
+      message: "Internal Server Error",
+    });
+  }
 };
