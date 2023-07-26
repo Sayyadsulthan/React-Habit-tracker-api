@@ -74,12 +74,56 @@ module.exports.createHabit = async function (req, res) {
   }
 };
 
-// module.exports.updateStatus = async function(req, res){
-//     try{
+module.exports.updateStatus = async function (req, res) {
+  try {
+    if (req.body.status || req.body.date) {
+      return res.status(200).json({ message: "please try again..." });
+    }
+    const habit = await Habit.findById(req.params._id);
+    // find the status array from habit and store in store
+    const status = habit.status;
+    // find the index of the status to update
+    const index = status.indexOf({ date: req.body.date });
+    switch (req.body.status) {
+      case "true":
+        // update the status of that index
+        status[index].completed = "false";
+        await Habit.findByIdAndUpdate(habit._id, { $set: { status: status } });
+        break;
+      case "false":
+        // update the status of that index
+        status[index].completed = "undefined";
+        await Habit.findByIdAndUpdate(habit._id, { $set: { status: status } });
+        break;
+      default:
+        // update the status of that index
+        status[index].completed = "true";
+        await Habit.findByIdAndUpdate(habit._id, { $set: { status: status } });
+        break;
+    }
 
-//         const habit =
-//     }catch(err){
-//         console.log("err", err);
-//         return res.status(500).json({ message: "Internal server Error" });
-//     }
-// }
+    return res.status(200).json({
+      message: "Status updated successfully...",
+    });
+  } catch (err) {
+    console.log("err", err);
+    return res.status(500).json({ message: "Internal server Error" });
+  }
+};
+
+module.exports.deleteHabit = async function (req, res) {
+  try {
+    await Habit.findByIdAndDelete(req.params._id);
+
+    const user = await User.findById(req.user._id);
+    const updatedHabits = user.habits.filter(() => _id != req.params._id);
+    user.habits = updatedHabits;
+    user.save();
+    return res.status(200).json({
+      message: "Habit deleted successfully...",
+    });
+  } catch (err) {
+    console.log("err", err);
+    return res.status(500).json({ message: "Internal server Error" });
+  }
+};

@@ -7,11 +7,14 @@ const UserController = require("../../controllers/user_controller");
 
 app.post("/create", UserController.createUser);
 app.post("/login", UserController.Login);
+app.post("/logout", UserController.Login);
 app.get(
   "/dashboard",
   passport.authenticate("jwt", { session: false }),
   UserController.Dashboard
 );
+
+
 
 app.use('/habit',  require('./habit'))
 

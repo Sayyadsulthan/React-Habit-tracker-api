@@ -83,8 +83,26 @@ module.exports.Dashboard = async function (req, res) {
       .json({ message: "This month habit", habits: currentHabits });
   } catch (err) {
     console.log(err);
-    return res.status(404).json({
+    return res.status(500).json({
       message: "Internal Server Error",
     });
   }
+};
+
+module.exports.logout = function (req, res, next) {
+  // try {
+  req.logout(function (err) {
+    if (err) {
+      console.log(err);
+      return next(err);
+    }
+  });
+
+  return res.status(200).json({ message: "You have logged out !" });
+  // } catch (err) {
+  //   console.log("error in logout :", err);
+  //   return res.status(500).json({
+  //     message: "Internal Server Error",
+  //   });
+  // }
 };
