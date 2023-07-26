@@ -55,7 +55,7 @@ module.exports.createHabit = async function (req, res) {
         } else {
           habit.status.push({
             completed: "undefined",
-            date: `${YY}-${MM}-0${i}`,
+            date: `${YY}-${MM}-${i}`,
           });
         }
       }
@@ -76,28 +76,57 @@ module.exports.createHabit = async function (req, res) {
 
 module.exports.updateStatus = async function (req, res) {
   try {
-    if (req.body.status || req.body.date) {
+    if (!req.body.status || !req.body.date) {
       return res.status(200).json({ message: "please try again..." });
     }
+    const date = req.body.date;
+    await date.toString();
+    console.log("date", date);
     const habit = await Habit.findById(req.params._id);
+    // console.log("habit", habit)
     // find the status array from habit and store in store
     const status = habit.status;
+    // console.log("status", status);
     // find the index of the status to update
-    const index = status.indexOf({ date: req.body.date });
-    switch (req.body.status) {
+    const getIndexOfDate = (index, i) => {
+      // console.log(index.date, i);
+      if (index.date == date) {
+        // console.log("index found");
+        return i;
+      }
+    };
+    // const index = status.findIndex(getIndexOfDate);
+    let index = 0;
+    status.forEach((element, i) => {
+      if (element.date == date) {
+        console.log("index found", i);
+        index = i;
+      }
+    });
+
+    // console.log("getIndex :", getIndexOfDate);
+    console.log("index", index);
+    console.log(status[index]);
+    console.log(status);
+
+    switch (status[index].completed) {
       case "true":
         // update the status of that index
         status[index].completed = "false";
+
         await Habit.findByIdAndUpdate(habit._id, { $set: { status: status } });
         break;
       case "false":
         // update the status of that index
         status[index].completed = "undefined";
+
         await Habit.findByIdAndUpdate(habit._id, { $set: { status: status } });
         break;
       default:
         // update the status of that index
+        // console.log(status)
         status[index].completed = "true";
+
         await Habit.findByIdAndUpdate(habit._id, { $set: { status: status } });
         break;
     }
@@ -116,7 +145,9 @@ module.exports.deleteHabit = async function (req, res) {
     await Habit.findByIdAndDelete(req.params._id);
 
     const user = await User.findById(req.user._id);
-    const updatedHabits = user.habits.filter(() => _id != req.params._id);
+    const updatedHabits = user.habits.filter(
+      (habit) => req.params._id != habit._id
+    );
     user.habits = updatedHabits;
     user.save();
     return res.status(200).json({

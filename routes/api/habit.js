@@ -10,8 +10,8 @@ app.post(
   passport.authenticate("jwt", { session: false }),
   habitController.createHabit
 );
-app.put(
-  "/update:_id",
+app.patch(
+  "/update/:_id",
   passport.authenticate("jwt", { session: false }),
   habitController.updateStatus
 );
