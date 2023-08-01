@@ -41,6 +41,7 @@ module.exports.createHabit = async function (req, res) {
     if (req.body.name) {
       const habit = await Habit.create({
         name: req.body.name,
+        user: req.user._id,
       });
 
       if (MM <= 9) {
@@ -50,7 +51,8 @@ module.exports.createHabit = async function (req, res) {
         if (i <= 9) {
           habit.status.push({
             completed: "undefined",
-            date: `${YY}-${MM}-0${i}`,
+            date: YY + "-" + MM + "-" + "0" + i,
+            // date: `${YY}-${MM}-0${i}`,
           });
         } else {
           habit.status.push({
@@ -64,20 +66,28 @@ module.exports.createHabit = async function (req, res) {
       habit.save();
       user.habits.push(habit);
       user.save();
-      return res.status(200).json({ message: "Habit created successfully..." });
+      return res
+        .status(200)
+        .json({ message: "Habit created successfully...", success: true });
     } else {
-      return res.status(201).json({ message: "Please fill the name of habit" });
+      return res
+        .status(201)
+        .json({ message: "Please fill the name of habit", success: true });
     }
   } catch (err) {
     console.log("err", err);
-    return res.status(500).json({ message: "Internal server Error" });
+    return res
+      .status(500)
+      .json({ message: "Internal server Error", success: false });
   }
 };
 
 module.exports.updateStatus = async function (req, res) {
   try {
     if (!req.body.status || !req.body.date) {
-      return res.status(200).json({ message: "please try again..." });
+      return res
+        .status(200)
+        .json({ message: "please try again...", success: false });
     }
     const date = req.body.date;
     await date.toString();
@@ -133,28 +143,37 @@ module.exports.updateStatus = async function (req, res) {
 
     return res.status(200).json({
       message: "Status updated successfully...",
+      success: true,
     });
   } catch (err) {
     console.log("err", err);
-    return res.status(500).json({ message: "Internal server Error" });
+    return res
+      .status(500)
+      .json({ message: "Internal server Error", success: false });
   }
 };
 
 module.exports.deleteHabit = async function (req, res) {
   try {
-    await Habit.findByIdAndDelete(req.params._id);
-
+    // await Habit.findByIdAndDelete(req.params._id);
+    const habit = Habit.findOne({ _id: req.params._id });
     const user = await User.findById(req.user._id);
-    const updatedHabits = user.habits.filter(
-      (habit) => req.params._id != habit._id
-    );
-    user.habits = updatedHabits;
-    user.save();
+    if (habit) {
+      const updatedHabits = user.habits.filter(
+        (habit) => req.params._id != habit._id
+      );
+      await habit.deleteOne();
+      user.habits = updatedHabits;
+      user.save();
+    }
     return res.status(200).json({
       message: "Habit deleted successfully...",
+      success: true,
     });
   } catch (err) {
     console.log("err", err);
-    return res.status(500).json({ message: "Internal server Error" });
+    return res
+      .status(500)
+      .json({ message: "Internal server Error", success: false });
   }
 };

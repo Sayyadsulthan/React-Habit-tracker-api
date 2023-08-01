@@ -1,4 +1,5 @@
 const express = require("express");
+const cors = require("cors");
 const port = 8000;
 const app = express();
 const passport = require("passport");
@@ -7,6 +8,7 @@ const db = require("./config/database");
 
 app.use(passport.initialize());
 app.use(express.urlencoded({ extended: true }));
+app.use(cors());
 
 app.use("/", require("./routes"));
 

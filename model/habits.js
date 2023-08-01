@@ -12,6 +12,11 @@ const habitSchema = new mongoose.Schema({
       date: String,
     },
   ],
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    required: true,
+  },
 });
 
 const Habit = mongoose.model("Habit", habitSchema);
