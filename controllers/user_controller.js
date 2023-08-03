@@ -95,9 +95,9 @@ module.exports.Dashboard = async function (req, res) {
     // const habits = await Habit.find();
     // deleting previus month older month habits
     // await Habit.deleteMany({ month: !(MM + 1) });
-    console.log("dashbosrd");
+    // console.log("dashbosrd");
     const currentHabits = await Habit.find({ user: req.user._id });
-    console.log("current habits to check ", currentHabits);
+    // console.log("current habits to check ", currentHabits);
     if (currentHabits) {
       return res.status(200).json({
         message: "This month habit",

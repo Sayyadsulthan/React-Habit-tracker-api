@@ -15,6 +15,17 @@ app.patch(
   passport.authenticate("jwt", { session: false }),
   habitController.updateStatus
 );
+app.patch(
+  "/updateName/:_id",
+  passport.authenticate("jwt", { session: false }),
+  habitController.updateHabitNAme
+);
+app.patch(
+  "/updateFavourite/:_id",
+  passport.authenticate("jwt", { session: false }),
+  habitController.updateFavourite
+);
+
 app.delete(
   "/:_id",
   passport.authenticate("jwt", { session: false }),

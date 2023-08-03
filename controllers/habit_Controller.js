@@ -35,16 +35,18 @@ var lastDay = new Date(date.getFullYear(), date.getMonth(), 0);
 
 module.exports.createHabit = async function (req, res) {
   try {
-    console.log("User ", req.user);
+    // console.log("User ", req.user);
     const user = await User.findOne({ email: req.user.email });
 
     if (req.body.name) {
       const habit = await Habit.create({
         name: req.body.name,
         user: req.user._id,
+        isFavourite: false,
       });
 
       if (MM <= 9) {
+        MM = parseInt(MM);
         MM = "0" + MM;
       }
       for (i = 1; i <= lastDay.getDate(); i++) {
@@ -91,9 +93,9 @@ module.exports.updateStatus = async function (req, res) {
     }
     const date = req.body.date;
     await date.toString();
-    console.log("date", date);
+    // console.log("date", date);
     const habit = await Habit.findById(req.params._id);
-    // console.log("habit", habit)
+    // console.log("habit", habit);
     // find the status array from habit and store in store
     const status = habit.status;
     // console.log("status", status);
@@ -115,9 +117,9 @@ module.exports.updateStatus = async function (req, res) {
     });
 
     // console.log("getIndex :", getIndexOfDate);
-    console.log("index", index);
-    console.log(status[index]);
-    console.log(status);
+    // console.log("index", index);
+    // console.log(status[index]);
+    // console.log(status);
 
     switch (status[index].completed) {
       case "true":
@@ -144,6 +146,66 @@ module.exports.updateStatus = async function (req, res) {
     return res.status(200).json({
       message: "Status updated successfully...",
       success: true,
+    });
+  } catch (err) {
+    console.log("err", err);
+    return res
+      .status(500)
+      .json({ message: "Internal server Error", success: false });
+  }
+};
+
+module.exports.updateHabitNAme = async function (req, res) {
+  try {
+    const habit = await Habit.findById(req.params._id);
+    // console.log("habit name", habit.name);
+    // console.log(req.body.name);
+    if (req.body.name) {
+      await habit.updateOne({ name: req.body.name });
+      // habit.save();
+      console.log("habit after", habit.name);
+      return res.status(200).json({
+        message: "Habit Name updated successfully...",
+        success: true,
+      });
+    }
+
+    return res.status(201).json({
+      message: "Please try again!!",
+      success: false,
+    });
+  } catch (err) {
+    console.log("err", err);
+    return res
+      .status(500)
+      .json({ message: "Internal server Error", success: false });
+  }
+};
+module.exports.updateFavourite = async function (req, res) {
+  try {
+    const habit = await Habit.findById(req.params._id);
+
+    if (req.body.isFavourite) {
+      const favourite = req.body.isFavourite == "false" ? false : true;
+
+      await habit.updateOne({ isFavourite: !favourite });
+
+      if (req.body.isFavourite == "true") {
+        return res.status(200).json({
+          message: "Habit removed from Favourite",
+          success: true,
+        });
+      } else {
+        return res.status(200).json({
+          message: "Habit added to Favourite",
+          success: true,
+        });
+      }
+    }
+
+    return res.status(201).json({
+      message: "Please try again!!",
+      success: false,
     });
   } catch (err) {
     console.log("err", err);

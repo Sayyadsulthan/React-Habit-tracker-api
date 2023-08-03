@@ -17,6 +17,7 @@ const habitSchema = new mongoose.Schema({
     ref: "User",
     required: true,
   },
+  isFavourite: Boolean,
 });
 
 const Habit = mongoose.model("Habit", habitSchema);
