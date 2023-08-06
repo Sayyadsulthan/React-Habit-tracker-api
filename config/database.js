@@ -1,7 +1,8 @@
 const mongoose = require("mongoose");
+require("dotenv").config();
 
 mongoose
-  .connect("mongodb://127.0.0.1:27017/react_habit_tracker_api")
+  .connect(process.env.DB_URI)
   .then(() => console.log("db connection successfull..."))
   .catch((err) => console.log("Error in DB : ", err));
 

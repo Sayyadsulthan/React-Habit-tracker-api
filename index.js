@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors");
-const port = 8000;
+require("dotenv").config();
+const port = process.env.PORT || 8001;
 const app = express();
 const passport = require("passport");
 const passport_JWT = require("./config/passport_JWT_Strategy");
