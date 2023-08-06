@@ -8,34 +8,8 @@ let YY = date.getFullYear();
 var firstDay = new Date(date.getFullYear(), date.getMonth(), 1);
 var lastDay = new Date(date.getFullYear(), date.getMonth(), 0);
 
-// function getWeekdayOfMonth(dateString) {
-//   const weekdays = [
-//     "Sunday",
-//     "Monday",
-//     "Tuesday",
-//     "Wednesday",
-//     "Thursday",
-//     "Friday",
-//     "Saturday",
-//   ];
-
-//   // Create a new Date object using the given dateString
-//   const date = new Date(dateString);
-
-//   // Get the day of the week as a numeric value (0 - Sunday, 1 - Monday, ..., 6 - Saturday)
-//   const dayOfWeek = date.getDay();
-
-//   // Return the weekday name corresponding to the numeric value
-//   return weekdays[dayOfWeek];
-// }
-
-// const date = "2023-07-25";
-// const weekday = getWeekdayOfMonth(date);
-// console.log(weekday); // Output: "Tuesday"
-
 module.exports.createHabit = async function (req, res) {
   try {
-    // console.log("User ", req.user);
     const user = await User.findOne({ email: req.user.email });
 
     if (req.body.name) {
@@ -63,7 +37,6 @@ module.exports.createHabit = async function (req, res) {
           });
         }
       }
-      //   habit.status.push({ date: `${DD}/${MM}/${YY}`, completed: "true" });
 
       habit.save();
       user.habits.push(habit);
@@ -93,21 +66,19 @@ module.exports.updateStatus = async function (req, res) {
     }
     const date = req.body.date;
     await date.toString();
-    // console.log("date", date);
+
     const habit = await Habit.findById(req.params._id);
-    // console.log("habit", habit);
+
     // find the status array from habit and store in store
     const status = habit.status;
-    // console.log("status", status);
+
     // find the index of the status to update
     const getIndexOfDate = (index, i) => {
-      // console.log(index.date, i);
       if (index.date == date) {
-        // console.log("index found");
         return i;
       }
     };
-    // const index = status.findIndex(getIndexOfDate);
+
     let index = 0;
     status.forEach((element, i) => {
       if (element.date == date) {
@@ -115,11 +86,6 @@ module.exports.updateStatus = async function (req, res) {
         index = i;
       }
     });
-
-    // console.log("getIndex :", getIndexOfDate);
-    // console.log("index", index);
-    // console.log(status[index]);
-    // console.log(status);
 
     switch (status[index].completed) {
       case "true":
@@ -136,7 +102,7 @@ module.exports.updateStatus = async function (req, res) {
         break;
       default:
         // update the status of that index
-        // console.log(status)
+
         status[index].completed = "true";
 
         await Habit.findByIdAndUpdate(habit._id, { $set: { status: status } });
@@ -158,11 +124,10 @@ module.exports.updateStatus = async function (req, res) {
 module.exports.updateHabitNAme = async function (req, res) {
   try {
     const habit = await Habit.findById(req.params._id);
-    // console.log("habit name", habit.name);
-    // console.log(req.body.name);
+
     if (req.body.name) {
       await habit.updateOne({ name: req.body.name });
-      // habit.save();
+
       console.log("habit after", habit.name);
       return res.status(200).json({
         message: "Habit Name updated successfully...",
@@ -217,7 +182,6 @@ module.exports.updateFavourite = async function (req, res) {
 
 module.exports.deleteHabit = async function (req, res) {
   try {
-    // await Habit.findByIdAndDelete(req.params._id);
     const habit = Habit.findOne({ _id: req.params._id });
     const user = await User.findById(req.user._id);
     if (habit) {

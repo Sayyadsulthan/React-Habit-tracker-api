@@ -32,7 +32,6 @@ module.exports.createUser = async function (req, res) {
 
   let findUser = await User.findOne({ email: req.body.email });
   if (findUser) {
-    console.log("user exist!!!");
     return res.status(403).json({
       message: "user exist",
       success: false,
@@ -41,7 +40,6 @@ module.exports.createUser = async function (req, res) {
 
   User.create(req.body)
     .then(() => {
-      console.log("User created successfully :");
       return res
         .status(200)
         .json({ message: "Account created successfully", success: true });
@@ -63,7 +61,7 @@ module.exports.Login = async function (req, res) {
     if (user) {
       const key = "codeial";
       const populatedUser = await user.populate("habits");
-      console.log("populated user", populatedUser);
+
       const Token = await jwt.sign(populatedUser.toJSON(), key);
 
       return res.status(200).json({
@@ -89,15 +87,8 @@ module.exports.Login = async function (req, res) {
 
 module.exports.Dashboard = async function (req, res) {
   try {
-    // const user = jwt.decode(req.body)
-    // console.log("Token ", req.body);
-
-    // const habits = await Habit.find();
-    // deleting previus month older month habits
-    // await Habit.deleteMany({ month: !(MM + 1) });
-    // console.log("dashbosrd");
     const currentHabits = await Habit.find({ user: req.user._id });
-    // console.log("current habits to check ", currentHabits);
+
     if (currentHabits) {
       return res.status(200).json({
         message: "This month habit",
@@ -115,7 +106,6 @@ module.exports.Dashboard = async function (req, res) {
 };
 
 module.exports.logout = function (req, res, next) {
-  // try {
   req.logout(function (err) {
     if (err) {
       console.log(err);
@@ -126,10 +116,4 @@ module.exports.logout = function (req, res, next) {
   return res
     .status(200)
     .json({ message: "You have logged out !", success: true });
-  // } catch (err) {
-  //   console.log("error in logout :", err);
-  //   return res.status(500).json({
-  //     message: "Internal Server Error",
-  //   });
-  // }
 };
